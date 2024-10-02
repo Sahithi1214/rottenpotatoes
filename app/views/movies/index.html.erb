@@ -1,16 +1,45 @@
-<p style="color: green"><%= notice %></p>
+<% if notice.present? %>
+  <p class="notice"><%= notice %></p>
+<% end %>
 
 <% content_for :title, "Movies" %>
 
 <h1>Movies</h1>
 
 <div id="movies">
-  <% @movies.each do |movie| %>
-    <%= render movie %>
-    <p>
-      <%= link_to "Show this movie", movie %>
-    </p>
-  <% end %>
+  <table>
+    <thead>
+      <tr>
+        <th class="<%= 'highlighted' if @sort_column == 'title' %> <%= 'descending' if @sort_column == 'title' && @sort_direction == 'desc' %>">
+          <%= sortable_column("title") %>
+          <span class="sr-only"><%= "Sorted #{@sort_direction == 'desc' ? 'descending' : 'ascending'}" if @sort_column == 'title' %></span>
+        </th>
+        <th class="<%= 'highlighted' if @sort_column == 'rating' %> <%= 'descending' if @sort_column == 'rating' && @sort_direction == 'desc' %>">
+          <%= sortable_column("rating") %>
+          <span class="sr-only"><%= "Sorted #{@sort_direction == 'desc' ? 'descending' : 'ascending'}" if @sort_column == 'rating' %></span>
+        </th>
+        <th class="<%= 'highlighted' if @sort_column == 'release_date' %> <%= 'descending' if @sort_column == 'release_date' && @sort_direction == 'desc' %>">
+          <%= sortable_column("release_date", "Release Date") %>
+          <span class="sr-only"><%= "Sorted #{@sort_direction == 'desc' ? 'descending' : 'ascending'}" if @sort_column == 'release_date' %></span>
+        </th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @movies.each do |movie| %>
+        <tr>
+          <td data-label="Title"><%= movie.title %></td>
+          <td data-label="Rating"><%= movie.rating %></td>
+          <td data-label="Release Date"><%= movie.release_date.strftime('%d-%b-%Y') %></td>
+          <td data-label="Actions">
+            <%= link_to 'Show', movie_path(movie, sort: @sort_column, direction: @sort_direction), class: 'button' %>
+            <%= link_to 'Edit', edit_movie_path(movie, sort: @sort_column, direction: @sort_direction), class: 'button' %>
+            <%= link_to 'Destroy', movie_path(movie, sort: @sort_column, direction: @sort_direction), method: :delete, data: { confirm: 'Are you sure?' }, class: 'button' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
 
-<%= link_to "New movie", new_movie_path %>
+<%= link_to "New movie", new_movie_path(sort: @sort_column, direction: @sort_direction), class: 'button' %>
